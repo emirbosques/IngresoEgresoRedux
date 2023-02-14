@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ingresoegresoredux-4a94b": {
+      "hosting": {
+        "IngresoEgresoAppRedux": [
+          "ingresoegresoredux-4a94b"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ingresoegresoredux-4a94b"
+  }
+}
