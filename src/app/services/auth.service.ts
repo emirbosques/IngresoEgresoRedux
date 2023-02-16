@@ -13,4 +13,11 @@ export class AuthService {
   crearUsuario(nombre: string, mail: string, password: string) {
     return this.fireAuth.createUserWithEmailAndPassword(mail, password);
   }
+
+
+  authenticateUser(email: string, password: string){
+    return this.fireAuth.signInWithEmailAndPassword(email, password );
+  }
+
+
 }
