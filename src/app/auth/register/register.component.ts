@@ -2,7 +2,7 @@ import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import Swal from 'sweetalert2'
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -42,6 +42,22 @@ export class RegisterComponent implements OnInit {
           this.router.navigate(['/']);
         }).catch((err) => {
           console.log('Error:', err);
+          const errorCode = err.code
+          // ALERT
+          if (errorCode == 'auth/weak-password') {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Hubo un problema al intentar crear el usuario. Intentelo de nuevo más tarde.',
+            })
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Hubo un problema al intentar realizar el registro. Intentelo de nuevo más tarde.',
+            });
+          }
+
         })
     }
   }

@@ -2,6 +2,7 @@ import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-login',
@@ -32,11 +33,26 @@ export class LoginComponent implements OnInit {
     const { user, password } = this.loginForm.value;
     this.authService.authenticateUser(user, password)
       .then((loginOk) => {
-        console.log(loginOk);
+        console.log(['code']);
         this.router.navigate(['/']);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        const mssgError = error.code;
+        // ALERT
+        if (mssgError === 'auth/user-not-found') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Usuario o password inválidos, por favor revise sus credenciales.',
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Hubo un problema al intentar hacer el login. Intentelo de nuevo más tarde.',
+          });
+        }
+
       });
   }
 
