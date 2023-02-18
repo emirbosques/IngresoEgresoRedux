@@ -1,6 +1,7 @@
+import Swal from 'sweetalert2';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat/app';
+
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,22 @@ export class AuthService {
   }
 
 
-  authenticateUser(email: string, password: string){
-    return this.fireAuth.signInWithEmailAndPassword(email, password );
+  authenticateUser(email: string, password: string) {
+    return this.fireAuth.signInWithEmailAndPassword(email, password);
+  }
+
+
+  showLoading() {
+    Swal.fire({
+      title: 'Espere por favor....',
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+  }
+
+  closeLoading() {
+    Swal.close();
   }
 
 

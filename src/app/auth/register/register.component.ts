@@ -32,6 +32,7 @@ export class RegisterComponent implements OnInit {
 
 
   crearUsuario() {
+    this.authService.showLoading()
     if (this.registroForm.valid) {
       console.log(this.registroForm.value);
       const { nombre, email, password } = this.registroForm.value;
@@ -40,7 +41,9 @@ export class RegisterComponent implements OnInit {
           console.log('Credenciales OK:', credenciales);
           this.registroForm.reset();
           this.router.navigate(['/']);
+          this.authService.closeLoading()
         }).catch((err) => {
+          this.authService.closeLoading()
           console.log('Error:', err);
           const errorCode = err.code
           // ALERT

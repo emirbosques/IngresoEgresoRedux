@@ -29,21 +29,22 @@ export class LoginComponent implements OnInit {
   }
 
   loginUser() {
-    console.log(this.loginForm.value);
+    this.authService.showLoading();
     const { user, password } = this.loginForm.value;
     this.authService.authenticateUser(user, password)
       .then((loginOk) => {
-        console.log(['code']);
         this.router.navigate(['/']);
+        this.authService.closeLoading()
       })
       .catch((error) => {
+        this.authService.closeLoading()
         const mssgError = error.code;
         // ALERT
         if (mssgError === 'auth/user-not-found') {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Usuario o password inválidos, por favor revise sus credenciales.',
+            text: 'Usuario o password inválidos, por favor revise sus credenciales.!!!',
           });
         } else {
           Swal.fire({
@@ -55,5 +56,9 @@ export class LoginComponent implements OnInit {
 
       });
   }
+
+
+
+  
 
 }
