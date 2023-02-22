@@ -1,5 +1,6 @@
+import { appReducersMap } from './app.reducer';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 
 // Modulos
 import { AppRoutingModule } from './app-routing.module';
@@ -22,6 +23,8 @@ import { provideAuth,getAuth } from '@angular/fire/auth';
 import { provideFirestore,getFirestore } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 
 @NgModule({
@@ -44,7 +47,9 @@ import { FIREBASE_OPTIONS } from '@angular/fire/compat';
     AngularFireAuthModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => getFirestore()),
+    StoreModule.forRoot(appReducersMap),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })
   ],
   providers: [ {provide: FIREBASE_OPTIONS, useValue: environment.firebase} ],
   bootstrap: [AppComponent]
