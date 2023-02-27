@@ -1,52 +1,66 @@
-import { UserInterface, UserRegistration, Usuario } from './../models/usuario.model';
+import { environment } from './../../environments/environment';
+import { setUser, unSetUser } from './../auth/auth.actions';
+import { AppState } from './../app.reducer';
+import { Store } from '@ngrx/store';
+import { Usuario } from './../models/usuario.model';
 import Swal from 'sweetalert2';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { map } from 'rxjs/operators';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
-import { Observable } from 'rxjs';
-import { addDoc, collection, Firestore } from '@angular/fire/firestore';
 
+import { collection, getFirestore, setDoc } from '@angular/fire/firestore';
+import { doc, onSnapshot } from "firebase/firestore";
+import { initializeApp } from '@angular/fire/app';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  // Initialize Firebase
+  app = initializeApp(environment.firebase);
+  db = getFirestore(this.app);
+
+  private getUserDoc: any
+
   constructor(
-    private afs: Firestore,
-    public fireAuth: AngularFireAuth) {
+    public fireAuth: AngularFireAuth,
+    private store: Store<AppState>
+  ) {
 
   }
 
 
   initAuthListener() {
     this.fireAuth.authState
-      .subscribe((fireUser) => {
-        console.log(fireUser);
-        console.log(fireUser?.email);
-        console.log(fireUser?.uid);
+      .subscribe(async (fireUser) => {
+        if (fireUser) {
+          console.log({fireUser});
+          this.getUserDoc = onSnapshot(doc(this.db, 'usuario', fireUser.uid), (docu) => {
+            console.log("Current data: ", docu.data());
+            const userData: any = { ...docu.data() };
+            this.store.dispatch(setUser({ user: userData }));
+          });
+        } else {
+          this.store.dispatch(unSetUser());
+          this.getUserDoc();
+          console.log("Current data: ", fireUser);
+        }
       })
   }
 
 
-  crearUsuario( nombre: string, mail: string, password:string ): Promise<any> {
+  crearUsuario(nombre: string, mail: string, password: string): Promise<any> {
     console.log(mail);
     console.log(password);
-    
+
     return this.fireAuth.createUserWithEmailAndPassword(mail, password)
-      .then(({ user }) => {
-        if (user) {
-          const uid = user?.uid ? user.uid : '';
-          const email = user?.email ? user.email : '';
-          const newUser = new Usuario(uid, nombre, email);
-          const userRef = collection(this.afs, 'usuario');
-
-          return addDoc(userRef, { ...newUser });
-        } else {
-          return;
+      .then(async ({ user }) => {
+        if (user && user.uid && user.email) {
+          const newUser = new Usuario(user.uid, nombre, user.email);
+          const userRef = collection(this.db, "usuario");
+          await setDoc(doc(userRef, user.uid), { ...newUser });
         }
-
       }
       )
   }
