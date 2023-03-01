@@ -12,6 +12,7 @@ import { collection, getFirestore, setDoc } from '@angular/fire/firestore';
 import { doc, onSnapshot } from "firebase/firestore";
 import { initializeApp } from '@angular/fire/app';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +22,8 @@ export class AuthService {
   app = initializeApp(environment.firebase);
   db = getFirestore(this.app);
 
-  private getUserDoc: any
+  private getUserDoc: any;
+  private _usuario!: any;
 
   constructor(
     public fireAuth: AngularFireAuth,
@@ -30,20 +32,25 @@ export class AuthService {
 
   }
 
+  get usuarioData(): Usuario {
+    return this._usuario;
+  }
 
   initAuthListener() {
     this.fireAuth.authState
       .subscribe(async (fireUser) => {
         if (fireUser) {
-          console.log({fireUser});
+          console.log({ fireUser });
           this.getUserDoc = onSnapshot(doc(this.db, 'usuario', fireUser.uid), (docu) => {
             console.log("Current data: ", docu.data());
+            this._usuario = { ...docu.data() };
             const userData: any = { ...docu.data() };
             this.store.dispatch(setUser({ user: userData }));
           });
         } else {
           this.store.dispatch(unSetUser());
           this.getUserDoc();
+          this._usuario = null;
           console.log("Current data: ", fireUser);
         }
       })
@@ -51,9 +58,6 @@ export class AuthService {
 
 
   crearUsuario(nombre: string, mail: string, password: string): Promise<any> {
-    console.log(mail);
-    console.log(password);
-
     return this.fireAuth.createUserWithEmailAndPassword(mail, password)
       .then(async ({ user }) => {
         if (user && user.uid && user.email) {
