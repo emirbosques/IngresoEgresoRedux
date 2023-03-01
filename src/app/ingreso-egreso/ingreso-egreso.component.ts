@@ -3,6 +3,8 @@ import { IngresoEgresoService } from './../services/ingreso-egreso.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-ingreso-egreso',
   templateUrl: './ingreso-egreso.component.html',
@@ -37,7 +39,9 @@ export class IngresoEgresoComponent implements OnInit {
       .then((ref) => {
         console.log('IG-component OK', ref);
         this.resetFormIngresoEgreso();
+        Swal.fire('Hey user!', 'Registro Correcto', 'info');
       }).catch((err) => {
+        Swal.fire('Hey user!', 'Registro Incorrecto', 'error');
         console.log('IG-component KO', err);
       });
   }
