@@ -36,17 +36,18 @@
           </div>
 
           <hr>
-          <button type="submit" class="btn btn-success mr-2" [disabled]="ingresoEgresoForm.invalid">
+
+          <button *ngIf="!loading" type="submit" class="btn btn-success mr-2" [disabled]="ingresoEgresoForm.invalid">
             <i class="fa fa-save"></i>
             Agregar
           </button>
 
-          <!-- 
-                <button disabled class="btn btn-success mr-2">
-                  <i class="fa fa-spin fa-sync"></i>
-                  Espere por favor...
-                </button> 
-              -->
+
+          <button *ngIf="loading" type="button" disabled class="btn btn-success mr-2">
+            <i class="fa fa-spin fa-sync"></i>
+            Espere por favor...
+          </button>
+
 
           <button type="reset" (click)="resetFormIngresoEgreso()" class="btn btn-light">Cancelar</button>
 
